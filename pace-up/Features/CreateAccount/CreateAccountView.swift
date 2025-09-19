@@ -1,9 +1,6 @@
 import UIKit
 
 class CreateAccountView: UIView {
-  
-  // MARK: - UI Components
-  
   private let scrollView: UIScrollView = {
     let scrollView = UIScrollView()
     scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -82,8 +79,6 @@ class CreateAccountView: UIView {
     return button
   }()
   
-  // MARK: - Initializers
-  
   override init(frame: CGRect) {
     super.init(frame: frame)
     setupView()
@@ -92,8 +87,6 @@ class CreateAccountView: UIView {
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
-  // MARK: - Setup Methods
   
   private func setupView() {
     backgroundColor = .background
@@ -125,27 +118,23 @@ class CreateAccountView: UIView {
   
   private func setupConstraints() {
     NSLayoutConstraint.activate([
-      // ScrollView
       scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
       scrollView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
       scrollView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
       scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
       
-      // ContentView
       contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
       contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
       contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
       contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
       contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
       
-      // MainStackView
       mainStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
       mainStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
       mainStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
       mainStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
       
-      // UI Elements inside StackView
-      logoImageView.heightAnchor.constraint(equalToConstant: 60),
+      logoImageView.heightAnchor.constraint(equalToConstant: 120),
       
       nameTextField.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor, constant: 16),
       nameTextField.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor, constant: -16),

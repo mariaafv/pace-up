@@ -3,7 +3,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   
   var window: UIWindow?
-//  var router: Router?
+  var router: Router?
   
   func scene(_ scene: UIScene,
              willConnectTo session: UISceneSession,
@@ -13,13 +13,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     let window = UIWindow(windowScene: windowScene)
 
-//    let router = Router()
-//    _ = router.start()
+    let router = Router()
+    _ = router.start()
 
-    window.rootViewController = CreateAccountViewController()
+    window.rootViewController = router.navigationController
     window.makeKeyAndVisible()
 
     self.window = window
-//    self.router = router
+    self.router = router
   }
 }
