@@ -1,9 +1,10 @@
 import UIKit
+import FirebaseCore
+import FirebaseAuth
 
 class CreateAccountViewController: BaseViewController {
   let baseView = CreateAccountView()
   let viewModel: CreateAccountViewModelProtocol
-  
   
   init(viewModel: CreateAccountViewModelProtocol) {
     self.viewModel = viewModel
@@ -30,11 +31,16 @@ class CreateAccountViewController: BaseViewController {
   }
   
   @objc func createAccountButtonTapped() {
-    print("createAccountButtonTapped")
+    guard let email = baseView.emailTextField.text, !email.isEmpty,
+          let password = baseView.passwordTextField.text, !password.isEmpty else {
+        // Mostre um alerta para o usuário preencher todos os campos
+        return
+    }
+    viewModel.callCreateAccount(email: email, password: password)
   }
   
   @objc func loginButtonTapped() {
-    print("loginButtonTapped")
+    viewModel.callLogin()
   }
 }
 
