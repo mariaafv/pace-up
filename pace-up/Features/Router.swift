@@ -13,9 +13,7 @@ final class Router {
   }
   
   func start() {
-    let viewModel = WelcomeViewModel(navigationDelegate: self)
-    let viewController = WelcomeViewController(viewModel: viewModel)
-    navigationController.viewControllers = [viewController]
+    startAuthenticationListener()
   }
 }
 
@@ -53,13 +51,32 @@ extension Router: CreateAccountNavigationDelegate {
 
 extension Router: LoginViewModelNavigationDelegate {
   func callLoginSuccessfully() {
-    print("logou")
+    let hasCompletedCreateAccount = UserDefaults.standard.bool(forKey: "hasCompletedCreateAccount")
+    
+    if hasCompletedCreateAccount {
+      // vai para home
+    } else {
+      let viewModel = OnboardingViewModel(navigationDelegate: self)
+      let viewController = OnboardingViewController(viewModel: viewModel)
+      navigationController.pushViewController(viewController, animated: true)
+    }
   }
   
   func callCreateAccount() {
     let viewModel = CreateAccountViewModel(navigationDelegate: self)
     let viewController = CreateAccountViewController(viewModel: viewModel)
     navigationController.pushViewController(viewController, animated: true)
+  }
+}
+
+extension Router: OnboardingNavigationDelegate {
+  func navigateToNextStep() {
+    //code
+  }
+  
+  func didCompleteOnboarding() {
+    UserDefaults.standard.set(true, forKey: "hasCompletedCreateAccount")
+    
   }
 }
 
@@ -72,10 +89,12 @@ extension Router {
       
       if let user = user {
         print("Usuário logado: \(user.uid)")
-        // Implemente a navegação para a tela principal
+        SessionManager.shared.userID = user.uid
         self.callLoginSuccessfully()
       } else {
-        print("Nenhum usuário logado.")
+        let viewModel = WelcomeViewModel(navigationDelegate: self)
+        let viewController = WelcomeViewController(viewModel: viewModel)
+        navigationController.viewControllers = [viewController]
       }
     }
   }

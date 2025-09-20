@@ -29,6 +29,7 @@ extension CreateAccountViewModel: CreateAccountViewModelProtocol {
       }
       
       print("Usuário registrado e logado: \(result?.user.uid)")
+      SessionManager.shared.userID = result?.user.uid
       navigationDelegate?.didTapCreateAccount()
     }
   }

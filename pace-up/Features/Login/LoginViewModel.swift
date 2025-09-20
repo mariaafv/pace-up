@@ -22,15 +22,12 @@ class LoginViewModel {
 extension LoginViewModel: LoginViewModelProtocol {
   func didTapLogin(email: String, password: String) {
     Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
-      guard let self = self else { return }
-      
-      if let error = error {
+      guard self != nil else { return }
+      SessionManager.shared.userID = result?.user.uid
+      if error != nil {
         // Notifique o ViewController sobre o erro
         return
       }
-      
-      // Notifique o ViewController sobre o sucesso
-      self.navigationDelegate?.callLoginSuccessfully()
     }
   }
   
