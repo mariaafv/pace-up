@@ -47,7 +47,7 @@ class LoginView: UIView {
     button.titleLabel?.font = .systemFont(ofSize: 20, weight: .regular)
     button.backgroundColor = .background
     button.setTitleColor(.text, for: .normal)
-    button.layer.cornerRadius = 12
+    button.layer.cornerRadius = 28
     button.layer.borderWidth = 2
     button.layer.borderColor = UIColor.appGreen.cgColor
     button.translatesAutoresizingMaskIntoConstraints = false
@@ -60,7 +60,7 @@ class LoginView: UIView {
     button.titleLabel?.font = .systemFont(ofSize: 20, weight: .regular)
     button.backgroundColor = .appGreen
     button.setTitleColor(.background, for: .normal)
-    button.layer.cornerRadius = 12
+    button.layer.cornerRadius = 28
     button.translatesAutoresizingMaskIntoConstraints = false
     return button
   }()
@@ -126,11 +126,11 @@ class LoginView: UIView {
       
       loginButton.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor, constant: 16),
       loginButton.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor, constant: -16),
-      loginButton.heightAnchor.constraint(equalToConstant: 55),
+      loginButton.heightAnchor.constraint(equalToConstant: 56),
 
       createAccountButton.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor, constant: 16),
       createAccountButton.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor, constant: -16),
-      createAccountButton.heightAnchor.constraint(equalToConstant: 55)
+      createAccountButton.heightAnchor.constraint(equalToConstant: 56)
     ])
   }
 }

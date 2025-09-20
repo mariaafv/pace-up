@@ -50,7 +50,7 @@ class CreateAccountView: UIView {
     button.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
     button.backgroundColor = .appGreen
     button.setTitleColor(.white, for: .normal)
-    button.layer.cornerRadius = 12
+    button.layer.cornerRadius = 28
     button.translatesAutoresizingMaskIntoConstraints = false
     return button
   }()
@@ -158,7 +158,7 @@ class CreateAccountView: UIView {
       
       createAccountButton.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor, constant: 16),
       createAccountButton.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor, constant: -16),
-      createAccountButton.heightAnchor.constraint(equalToConstant: 55)
+      createAccountButton.heightAnchor.constraint(equalToConstant: 56)
     ])
   }
 }

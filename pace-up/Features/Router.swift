@@ -13,11 +13,29 @@ final class Router {
   }
   
   func start() {
-    let viewModel = LoginViewModel(navigationDelegate: self)
-    let viewController = LoginViewController(viewModel: viewModel)
+    let viewModel = WelcomeViewModel(navigationDelegate: self)
+    let viewController = WelcomeViewController(viewModel: viewModel)
     navigationController.viewControllers = [viewController]
   }
 }
+
+// MARK: - WELCOME VIEW MODEL
+
+extension Router: WelcomeViewModelNavigationDelegate {
+  func navigateToCreateAccount() {
+    let viewModel = CreateAccountViewModel(navigationDelegate: self)
+    let viewController = CreateAccountViewController(viewModel: viewModel)
+    navigationController.pushViewController(viewController, animated: true)
+  }
+  
+  func navigateToLogin() {
+    let viewModel = LoginViewModel(navigationDelegate: self)
+    let viewController = LoginViewController(viewModel: viewModel)
+    navigationController.pushViewController(viewController, animated: true)
+  }
+}
+
+// MARK: - CREATE ACCOUNT
 
 extension Router: CreateAccountNavigationDelegate {
   func didTapCreateAccount() {
@@ -31,6 +49,8 @@ extension Router: CreateAccountNavigationDelegate {
   }
 }
 
+// MARK: - LOGIN
+
 extension Router: LoginViewModelNavigationDelegate {
   func callLoginSuccessfully() {
     print("logou")
@@ -42,6 +62,8 @@ extension Router: LoginViewModelNavigationDelegate {
     navigationController.pushViewController(viewController, animated: true)
   }
 }
+
+// MARK: - FIREBASE
 
 extension Router {
   func startAuthenticationListener() {
