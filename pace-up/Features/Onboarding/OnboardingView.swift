@@ -76,7 +76,7 @@ class OnboardingView: UIView {
   
   let nextButton: UIButton = {
     let button = UIButton(type: .system)
-    button.setTitle("Próximo", for: .normal)
+    button.setTitle("Gerar treino", for: .normal)
     button.titleLabel?.font = .systemFont(ofSize: 18, weight: .regular)
     button.backgroundColor = .appGreen
     button.setTitleColor(.white, for: .normal)

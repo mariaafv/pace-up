@@ -41,13 +41,12 @@ final class OnboardingViewModel: OnboardingViewModelProtocol {
   }
   
   func didTapNext() {
-    let data: [String: Any] = [
-      "weight": weight,
-      "height": height,
-      "goal": goal,
-      "experience": experience,
-      "runDays": Array(selectedDays)]
-    print("DEBUG: Dias selecionados: \(selectedDays)")
+    let data: [String: Any] = ["weight": weight,
+                               "height": height,
+                               "goal": goal,
+                               "experience": experience,
+                               "runDays": Array(selectedDays)]
+
     saveOnboardingData(profileData: data)
     navigationDelegate?.navigateToNextStep()
   }
@@ -74,8 +73,6 @@ final class OnboardingViewModel: OnboardingViewModelProtocol {
       if let error = error {
         print("Erro ao salvar perfil: \(error.localizedDescription)")
       } else {
-        print("Perfil do usuário salvo com sucesso!")
-        // Marca que o onboarding foi concluído
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
       }
     }
