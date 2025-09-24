@@ -130,29 +130,3 @@ extension OnboardingViewController: UITextFieldDelegate {
     }
   }
 }
-
-extension OnboardingViewController: OnboardingNavigationDelegate {
-  func navigateToNextStep() {
-        guard let userID = SessionManager.shared.userID else { return }
-        let db = Firestore.firestore()
-        
-        db.collection("users").document(userID).addSnapshotListener { documentSnapshot, error in
-            guard let document = documentSnapshot, document.exists else {
-                print("Documento não encontrado")
-                return
-            }
-            
-            // Verifica se o campo 'workoutPlan' existe no documento
-            if let planData = document.data()?["workoutPlan"] as? [String: Any] {
-                print("Plano de treino recebido: \(planData)")
-                // Aqui você decodifica os dados do plano
-                // e atualiza sua UI para mostrar o treino para o usuário.
-                // Ex: self.updateUI(with: planData)
-            } else {
-                // O plano ainda não foi gerado.
-                // Você pode mostrar uma mensagem como "Gerando seu plano de treino..."
-                print("Aguardando geração do plano de treino...")
-            }
-        }
-  }
-}

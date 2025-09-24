@@ -10,10 +10,38 @@ final class Router {
   
   init() {
     self.navigationController = UINavigationController()
+    self.navigationController.setNavigationBarHidden(true, animated: false)
   }
   
   func start() {
     startAuthenticationListener()
+  }
+  
+  private func showMainApp() {
+    let tabBarController = UITabBarController()
+    
+    let viewModel = WorkoutPlanViewModel()
+    let planVC = WorkoutPlanViewController(viewModel: viewModel)
+    let planNavController = UINavigationController(rootViewController: planVC)
+    planNavController.tabBarItem = UITabBarItem(title: "Plano", image: UIImage(systemName: "calendar"), tag: 0)
+    
+    let runsVC = UIViewController()
+    runsVC.view.backgroundColor = .systemBackground
+    runsVC.title = "Minhas Corridas"
+    let runsNavController = UINavigationController(rootViewController: runsVC)
+    runsNavController.tabBarItem = UITabBarItem(title: "Corridas", image: UIImage(systemName: "figure.run"), tag: 1)
+    
+    let profileVC = UIViewController()
+    profileVC.view.backgroundColor = .systemBackground
+    profileVC.title = "Perfil"
+    let profileNavController = UINavigationController(rootViewController: profileVC)
+    profileNavController.tabBarItem = UITabBarItem(title: "Perfil", image: UIImage(systemName: "person.fill"), tag: 2)
+    
+    tabBarController.viewControllers = [planNavController, runsNavController, profileNavController]
+    tabBarController.tabBar.tintColor = .appGreen
+    tabBarController.tabBar.backgroundColor = .systemBackground
+    
+    navigationController.setViewControllers([tabBarController], animated: true)
   }
 }
 
@@ -51,14 +79,14 @@ extension Router: CreateAccountNavigationDelegate {
 
 extension Router: LoginViewModelNavigationDelegate {
   func callLoginSuccessfully() {
-    let hasCompletedCreateAccount = UserDefaults.standard.bool(forKey: "hasCompletedCreateAccount")
+    let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
     
-    if hasCompletedCreateAccount {
-      // vai para home
+    if hasCompletedOnboarding {
+      showMainApp()
     } else {
       let viewModel = OnboardingViewModel(navigationDelegate: self)
       let viewController = OnboardingViewController(viewModel: viewModel)
-      navigationController.pushViewController(viewController, animated: true)
+      navigationController.setViewControllers([viewController], animated: true)
     }
   }
   
@@ -69,14 +97,18 @@ extension Router: LoginViewModelNavigationDelegate {
   }
 }
 
+// MARK: - ONBOARDING
+
 extension Router: OnboardingNavigationDelegate {
   func navigateToNextStep() {
-    //code
+    let viewModel = WorkoutPlanViewModel()
+    let viewController = WorkoutPlanViewController(viewModel: viewModel)
+    navigationController.pushViewController(viewController, animated: true)
   }
   
   func didCompleteOnboarding() {
-    UserDefaults.standard.set(true, forKey: "hasCompletedCreateAccount")
-    
+    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+    showMainApp()
   }
 }
 
@@ -94,7 +126,8 @@ extension Router {
       } else {
         let viewModel = WelcomeViewModel(navigationDelegate: self)
         let viewController = WelcomeViewController(viewModel: viewModel)
-        navigationController.viewControllers = [viewController]
+        navigationController.setViewControllers([viewController], animated: false)
+        navigationController.setNavigationBarHidden(true, animated: false)
       }
     }
   }

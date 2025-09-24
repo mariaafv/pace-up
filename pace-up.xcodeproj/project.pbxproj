@@ -14,6 +14,12 @@
 		9DDA46542E7E419C003482DD /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 9DDA46532E7E419C003482DD /* FirebaseAppCheck */; };
 		9DDA46572E7EE3F3003482DD /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9DDA46562E7EE3F3003482DD /* FirebaseAuth */; };
 		9DDA466D2E7F6F53003482DD /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 9DDA466C2E7F6F53003482DD /* FirebaseFirestore */; };
+		9DDA467E2E8369E7003482DD /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 9DDA467D2E8369E7003482DD /* Auth */; };
+		9DDA46802E8369E7003482DD /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 9DDA467F2E8369E7003482DD /* Functions */; };
+		9DDA46822E8369E7003482DD /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 9DDA46812E8369E7003482DD /* PostgREST */; };
+		9DDA46842E8369E7003482DD /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 9DDA46832E8369E7003482DD /* Realtime */; };
+		9DDA46862E8369E7003482DD /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 9DDA46852E8369E7003482DD /* Storage */; };
+		9DDA468A2E836A2E003482DD /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 9DDA46892E836A2E003482DD /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,13 +52,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DDA46862E8369E7003482DD /* Storage in Frameworks */,
 				9DDA46522E7E419C003482DD /* FirebaseAnalyticsIdentitySupport in Frameworks */,
 				9DDA46572E7EE3F3003482DD /* FirebaseAuth in Frameworks */,
 				9DDA464E2E7E419C003482DD /* FirebaseAnalytics in Frameworks */,
+				9DDA46802E8369E7003482DD /* Functions in Frameworks */,
+				9DDA46822E8369E7003482DD /* PostgREST in Frameworks */,
 				9DDA46502E7E419C003482DD /* FirebaseAnalyticsCore in Frameworks */,
 				9DDA46542E7E419C003482DD /* FirebaseAppCheck in Frameworks */,
 				9DDA464C2E7E419C003482DD /* FirebaseAI in Frameworks */,
+				9DDA467E2E8369E7003482DD /* Auth in Frameworks */,
 				9DDA466D2E7F6F53003482DD /* FirebaseFirestore in Frameworks */,
+				9DDA46842E8369E7003482DD /* Realtime in Frameworks */,
+				9DDA468A2E836A2E003482DD /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +122,12 @@
 				9DDA46532E7E419C003482DD /* FirebaseAppCheck */,
 				9DDA46562E7EE3F3003482DD /* FirebaseAuth */,
 				9DDA466C2E7F6F53003482DD /* FirebaseFirestore */,
+				9DDA467D2E8369E7003482DD /* Auth */,
+				9DDA467F2E8369E7003482DD /* Functions */,
+				9DDA46812E8369E7003482DD /* PostgREST */,
+				9DDA46832E8369E7003482DD /* Realtime */,
+				9DDA46852E8369E7003482DD /* Storage */,
+				9DDA46892E836A2E003482DD /* Supabase */,
 			);
 			productName = "pace-up";
 			productReference = 9DDA461B2E7CD724003482DD /* pace-up.app */;
@@ -141,6 +159,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				9DDA464A2E7E419C003482DD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				9DDA467C2E8369E7003482DD /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9DDA461C2E7CD724003482DD /* Products */;
@@ -380,6 +399,14 @@
 				minimumVersion = 12.3.0;
 			};
 		};
+		9DDA467C2E8369E7003482DD /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -417,6 +444,36 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9DDA464A2E7E419C003482DD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		9DDA467D2E8369E7003482DD /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DDA467C2E8369E7003482DD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		9DDA467F2E8369E7003482DD /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DDA467C2E8369E7003482DD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		9DDA46812E8369E7003482DD /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DDA467C2E8369E7003482DD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		9DDA46832E8369E7003482DD /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DDA467C2E8369E7003482DD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		9DDA46852E8369E7003482DD /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DDA467C2E8369E7003482DD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		9DDA46892E836A2E003482DD /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DDA467C2E8369E7003482DD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
