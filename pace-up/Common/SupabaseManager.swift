@@ -2,30 +2,16 @@ import Foundation
 import Supabase
 
 class SupabaseManager {
+  
   static let shared = SupabaseManager()
+  
   let client: SupabaseClient
   
   private init() {
-    guard let url = Bundle.main.url(forResource: "Supabase-Keys", withExtension: "plist") else {
-      fatalError("ERRO: Arquivo Supabase-Keys.plist não encontrado. Verifique se ele foi adicionado ao projeto.")
-    }
-    
-    guard let data = try? Data(contentsOf: url),
-          let dict = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
-      fatalError("ERRO: Não foi possível ler o arquivo Supabase-Keys.plist.")
-    }
-    
-    guard let supabaseURLString = dict["SUPABASE_URL"] as? String,
-          let supabaseKey = dict["SUPABASE_KEY"] as? String else {
-      fatalError("ERRO: SUPABASE_URL ou SUPABASE_KEY não encontradas no arquivo Supabase-Keys.plist.")
-    }
-    
-    guard let supabaseURL = URL(string: supabaseURLString) else {
-      fatalError("ERRO: A SUPABASE_URL no arquivo Supabase-Keys.plist é inválida.")
-    }
+    let supabaseURL = URL(string: "https://lycdhqxqwhergrpyvftv.supabase.co")!
+    let supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5Y2RocXhxd2hlcmdycHl2ZnR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NjQ0NTIsImV4cCI6MjA3NDI0MDQ1Mn0.dqjYShCS7raZZdL9f1GE0cy0dxpUVCGyfA2rhgBc0E8"
     
     self.client = SupabaseClient(supabaseURL: supabaseURL, supabaseKey: supabaseKey)
-    
-    print("✅ SupabaseManager inicializado com sucesso a partir do .plist!")
   }
 }
+

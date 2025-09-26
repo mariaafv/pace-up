@@ -18,7 +18,7 @@ class CustomTextField: UITextField {
   
   private func configure() {
     translatesAutoresizingMaskIntoConstraints = false
-    backgroundColor = .backgroundDarker
+    backgroundColor = .background
     layer.cornerRadius = 12
     font = .systemFont(ofSize: 16)
     textColor = .text

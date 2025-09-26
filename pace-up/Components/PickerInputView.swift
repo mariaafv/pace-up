@@ -57,7 +57,7 @@ class PickerInputView: UIView {
   }
   
   private func setupView() {
-    backgroundColor = .backgroundDarker
+    backgroundColor = .background
     layer.cornerRadius = 14
     layer.borderColor = UIColor.systemGray5.cgColor
     layer.borderWidth = 1

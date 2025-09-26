@@ -103,7 +103,7 @@ class WelcomeView: UIView {
   }
   
   private func setupView() {
-    backgroundColor = .background
+    backgroundColor = .systemGroupedBackground
     setupHierarchy()
     setupConstraints()
   }

@@ -89,7 +89,7 @@ class CreateAccountView: UIView {
   }
   
   private func setupView() {
-    backgroundColor = .background
+    backgroundColor = .systemGroupedBackground
     setupHierarchy()
     setupConstraints()
   }

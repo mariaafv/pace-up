@@ -20,16 +20,22 @@ final class Router {
   private func showMainApp() {
     let tabBarController = UITabBarController()
     
-    let viewModel = WorkoutPlanViewModel()
-    let planVC = WorkoutPlanViewController(viewModel: viewModel)
+    let viewModel = HomeViewModel(navigationDelegate: self)
+    let planVC = HomeViewController(viewModel: viewModel)
     let planNavController = UINavigationController(rootViewController: planVC)
-    planNavController.tabBarItem = UITabBarItem(title: "Plano", image: UIImage(systemName: "calendar"), tag: 0)
+    planNavController.tabBarItem = UITabBarItem(title: "Inicio", image: UIImage(systemName: "house.fill"), tag: 0)
     
-    let runsVC = UIViewController()
-    runsVC.view.backgroundColor = .systemBackground
-    runsVC.title = "Minhas Corridas"
-    let runsNavController = UINavigationController(rootViewController: runsVC)
-    runsNavController.tabBarItem = UITabBarItem(title: "Corridas", image: UIImage(systemName: "figure.run"), tag: 1)
+    let runVC = UIViewController()
+    runVC.view.backgroundColor = .systemBackground
+    runVC.title = "Correr"
+    let runNavController = UINavigationController(rootViewController: runVC)
+    runNavController.tabBarItem = UITabBarItem(title: "Correr", image: UIImage(systemName: "play.circle.fill"), tag: 2)
+    
+    let statsVC = UIViewController()
+    statsVC.view.backgroundColor = .systemBackground
+    statsVC.title = "Minhas Corridas"
+    let statsNavController = UINavigationController(rootViewController: statsVC)
+    statsNavController.tabBarItem = UITabBarItem(title: "Histórico", image: UIImage(systemName: "trophy.fill"), tag: 1)
     
     let profileVC = UIViewController()
     profileVC.view.backgroundColor = .systemBackground
@@ -37,7 +43,7 @@ final class Router {
     let profileNavController = UINavigationController(rootViewController: profileVC)
     profileNavController.tabBarItem = UITabBarItem(title: "Perfil", image: UIImage(systemName: "person.fill"), tag: 2)
     
-    tabBarController.viewControllers = [planNavController, runsNavController, profileNavController]
+    tabBarController.viewControllers = [planNavController, runNavController, statsNavController, profileNavController]
     tabBarController.tabBar.tintColor = .appGreen
     tabBarController.tabBar.backgroundColor = .systemBackground
     
@@ -79,15 +85,7 @@ extension Router: CreateAccountNavigationDelegate {
 
 extension Router: LoginViewModelNavigationDelegate {
   func callLoginSuccessfully() {
-    let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
-    
-    if hasCompletedOnboarding {
-      showMainApp()
-    } else {
-      let viewModel = OnboardingViewModel(navigationDelegate: self)
-      let viewController = OnboardingViewController(viewModel: viewModel)
-      navigationController.setViewControllers([viewController], animated: true)
-    }
+    showMainApp()
   }
   
   func callCreateAccount() {
@@ -97,13 +95,21 @@ extension Router: LoginViewModelNavigationDelegate {
   }
 }
 
+extension Router: HomeViewModelNavigationDelegate {
+  func navigateToOnboarding() {
+    let viewModel = OnboardingViewModel(navigationDelegate: self)
+    let viewController = OnboardingViewController(viewModel: viewModel)
+    navigationController.setViewControllers([viewController], animated: true)
+  }
+}
+
 // MARK: - ONBOARDING
 
 extension Router: OnboardingNavigationDelegate {
   func navigateToNextStep() {
-    let viewModel = WorkoutPlanViewModel()
-    let viewController = WorkoutPlanViewController(viewModel: viewModel)
-    navigationController.pushViewController(viewController, animated: true)
+//    let viewModel = WorkoutPlanViewModel()
+//    let viewController = WorkoutPlanViewController(viewModel: viewModel)
+//    navigationController.pushViewController(viewController, animated: true)
   }
   
   func didCompleteOnboarding() {

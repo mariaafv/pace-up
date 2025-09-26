@@ -97,7 +97,7 @@ class OnboardingView: UIView {
   }
   
   private func setupView() {
-    backgroundColor = .background
+    backgroundColor = .systemGroupedBackground
     experiencePicker.placeholder = "Tempo de experiência"
     goalPicker.placeholder = "Objetivo final"
     
