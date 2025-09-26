@@ -1,14 +1,12 @@
-// WeekPlanCell.swift
 import UIKit
 
 class WeekPlanCell: UICollectionViewCell {
     static let reuseIdentifier = "WeekPlanCell"
     
-    // Uma stack view para listar os cards de treino do dia
     private let workoutsStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 10
+        stack.spacing = 16 // Espaçamento entre os cards de treino
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
@@ -22,25 +20,42 @@ class WeekPlanCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /// Preenche a célula com os treinos de uma semana específica
-    func configure(with workouts: [WorkoutDay]) {
-        // Limpa a lista antiga antes de adicionar a nova
+    func configure(with workouts: [WorkoutDay], weekNumber: Int) {
         workoutsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        // Adiciona um card para cada treino da semana
         for workout in workouts {
-            let card = WorkoutDayCardView()
-            card.configure(with: workout)
+            let card = TodayWorkoutCardView(frame: .zero)
+            let todayWorkout = workout.toTodayWorkout(weekNumber: weekNumber)
+            
+            card.configure(with: todayWorkout) {
+                print("Botão 'Começar Agora' tocado para o treino: \(todayWorkout.workoutType)")
+                // Exemplo de como você chamaria o router no futuro
+                // router?.navigateToLiveRun()
+            }
             workoutsStackView.addArrangedSubview(card)
         }
     }
     
     private func setupUI() {
-        contentView.addSubview(workoutsStackView)
+        // MUDANÇA: Adiciona um scrollView para o caso de a lista de treinos da semana ser muito grande
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(scrollView)
+        scrollView.addSubview(workoutsStackView)
+        
         NSLayoutConstraint.activate([
-            workoutsStackView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            workoutsStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            workoutsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            // ScrollView preenchendo toda a célula
+            scrollView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
+            // StackView dentro do ScrollView
+            workoutsStackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            workoutsStackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            workoutsStackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            workoutsStackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            workoutsStackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor) // Essencial
         ])
     }
 }

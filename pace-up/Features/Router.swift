@@ -21,7 +21,7 @@ final class Router {
     let tabBarController = UITabBarController()
     
     let viewModel = HomeViewModel(navigationDelegate: self)
-    let planVC = HomeViewController(viewModel: viewModel)
+    let planVC = HomeViewController()
     let planNavController = UINavigationController(rootViewController: planVC)
     planNavController.tabBarItem = UITabBarItem(title: "Inicio", image: UIImage(systemName: "house.fill"), tag: 0)
     

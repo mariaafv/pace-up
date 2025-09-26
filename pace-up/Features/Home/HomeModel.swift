@@ -1,5 +1,15 @@
 import Foundation
 
+struct TodayWorkout {
+  let day: String?
+    let weekNumber: Int
+    let workoutType: String
+    let description: String
+    let durationMinutes: Int
+    let targetDistance: Double?
+    let completed: Bool
+}
+
 struct WorkoutPlan: Codable {
   let week1: [WorkoutDay]?
   let week2: [WorkoutDay]?
@@ -12,6 +22,17 @@ struct WorkoutDay: Codable {
   let type: String?
   let duration_minutes: Int?
   let description: String?
+  
+  func toTodayWorkout(weekNumber: Int) -> TodayWorkout {
+    return TodayWorkout(
+      day: self.day, weekNumber: weekNumber,
+      workoutType: self.type ?? "descanso",
+      description: self.description ?? "Recuperação é parte do treino!",
+      durationMinutes: self.duration_minutes ?? 0,
+      targetDistance: nil, // A IA ainda não nos dá essa informação
+      completed: false // A lógica de conclusão virá depois
+    )
+  }
 }
 
 struct ProfileInfo: Decodable {

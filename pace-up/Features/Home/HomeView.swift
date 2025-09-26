@@ -26,52 +26,39 @@ class HomeView: UIView {
     private let distanceCard = StatCardView(icon: UIImage(systemName: "mappin.and.ellipse"), title: "Distância Total", value: "0.0 km")
     private let runsCard = StatCardView(icon: UIImage(systemName: "trophy.fill"), title: "Corridas", value: "0")
     private let timeCard = StatCardView(icon: UIImage(systemName: "clock.fill"), title: "Tempo Total", value: "0h 0m")
-    private let weekCard = StatCardView(icon: UIImage(systemName: "target"), title: "Semana Atual", value: "1/4")
-    
+    private let weekCard = StatCardView(icon: UIImage(systemName: "target"), title: "Semana Atual", value: "0/4")
+
     // MARK: - Plan Section Components
+    private let planHeaderView = UIView() // Container para o título e o seletor
+    
     private let myPlanLabel: UILabel = {
-      let label = UILabel(text: "a", font: .systemFont(ofSize: 28, weight: .bold), textColor: .label)
+      let label = UILabel(text: "a", font: .systemFont(ofSize: 22, weight: .bold), textColor: .label)
         label.text = "Meu Plano de Corrida"
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    // A view de estado vazio, para quando não há plano
+    // O novo seletor de semanas
+    let weekSegmentedControl: UISegmentedControl = {
+        let sc = UISegmentedControl(items: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"])
+        sc.translatesAutoresizingMaskIntoConstraints = false
+        sc.selectedSegmentIndex = 0 // Começa com a primeira semana
+        return sc
+    }()
+    
     let planEmptyStateView = PlanEmptyStateView()
     
-    // O container para o plano de treino quando ele existe
-    private let planContainerView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.isHidden = true // Começa escondido
-        return view
-    }()
-    
-    // A CollectionView paginada para as semanas
-    let weeklyPlanCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        // O tamanho de cada célula será definido no ViewController
-        
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.translatesAutoresizingMaskIntoConstraints = false
-        cv.backgroundColor = .clear
-        cv.showsHorizontalScrollIndicator = false
-        cv.isPagingEnabled = true // Habilita o efeito de "passar para o lado"
-        return cv
-    }()
-    
-    // O indicador de página (as bolinhas)
-    let pageControl: UIPageControl = {
-        let pc = UIPageControl()
-        pc.translatesAutoresizingMaskIntoConstraints = false
-      pc.currentPageIndicatorTintColor = .appGreen
-        pc.pageIndicatorTintColor = .systemGray4
-        pc.numberOfPages = 4 // Valor inicial
-        return pc
+    // A StackView que conterá a lista de cards de treino da semana
+    let weeklyWorkoutListStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 16
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.isHidden = true // Começa escondida
+        return stack
     }()
 
     // MARK: - Initializers
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -82,13 +69,13 @@ class HomeView: UIView {
     }
     
     // MARK: - Setup
-    
     private func setupView() {
         backgroundColor = .systemGroupedBackground
         setupHierarchy()
         setupConstraints()
         
-        greetingLabel.text = "Olá, Maria! 👋"
+        // Define textos iniciais
+        greetingLabel.text = "Olá!"
         subtitleLabel.text = "Pronto para sua próxima corrida?"
     }
     
@@ -111,20 +98,21 @@ class HomeView: UIView {
         statsGridStack.axis = .vertical
         statsGridStack.spacing = 16
         
-        // Monta a seção do plano de treino (CollectionView + PageControl)
-        planContainerView.addSubview(weeklyPlanCollectionView)
-        planContainerView.addSubview(pageControl)
+        // Monta o cabeçalho do plano de treino
+        planHeaderView.addSubview(myPlanLabel)
+        planHeaderView.addSubview(weekSegmentedControl)
         
-        // Adiciona tudo à stack view principal
+        // Adiciona tudo à stack view principal na ordem correta
         mainStackView.addArrangedSubview(greetingLabel)
         mainStackView.addArrangedSubview(subtitleLabel)
         mainStackView.addArrangedSubview(statsGridStack)
-        mainStackView.addArrangedSubview(myPlanLabel)
-        mainStackView.addArrangedSubview(planEmptyStateView) // Começa com o estado vazio visível
-        mainStackView.addArrangedSubview(planContainerView)   // O container do plano começa escondido
+        mainStackView.addArrangedSubview(planHeaderView)
+        mainStackView.addArrangedSubview(planEmptyStateView)
+        mainStackView.addArrangedSubview(weeklyWorkoutListStackView)
         
+        // Ajusta espaçamentos customizados
         mainStackView.setCustomSpacing(8, after: greetingLabel)
-        mainStackView.setCustomSpacing(24, after: myPlanLabel)
+        mainStackView.setCustomSpacing(32, after: statsGridStack)
     }
     
     private func setupConstraints() {
@@ -140,15 +128,15 @@ class HomeView: UIView {
             mainStackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -20),
             mainStackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -40),
             
-            // Constraints para a seção do plano de treino
-            weeklyPlanCollectionView.topAnchor.constraint(equalTo: planContainerView.topAnchor),
-            weeklyPlanCollectionView.leadingAnchor.constraint(equalTo: planContainerView.leadingAnchor),
-            weeklyPlanCollectionView.trailingAnchor.constraint(equalTo: planContainerView.trailingAnchor),
-            weeklyPlanCollectionView.heightAnchor.constraint(equalToConstant: 250), // Altura ajustável conforme necessidade
-
-            pageControl.topAnchor.constraint(equalTo: weeklyPlanCollectionView.bottomAnchor, constant: 8),
-            pageControl.centerXAnchor.constraint(equalTo: planContainerView.centerXAnchor),
-            pageControl.bottomAnchor.constraint(equalTo: planContainerView.bottomAnchor),
+            // Constraints para o cabeçalho do plano
+            myPlanLabel.topAnchor.constraint(equalTo: planHeaderView.topAnchor),
+            myPlanLabel.leadingAnchor.constraint(equalTo: planHeaderView.leadingAnchor),
+            myPlanLabel.trailingAnchor.constraint(equalTo: planHeaderView.trailingAnchor),
+            
+            weekSegmentedControl.topAnchor.constraint(equalTo: myPlanLabel.bottomAnchor, constant: 16),
+            weekSegmentedControl.leadingAnchor.constraint(equalTo: planHeaderView.leadingAnchor),
+            weekSegmentedControl.trailingAnchor.constraint(equalTo: planHeaderView.trailingAnchor),
+            weekSegmentedControl.bottomAnchor.constraint(equalTo: planHeaderView.bottomAnchor)
         ])
     }
     
@@ -161,12 +149,14 @@ class HomeView: UIView {
     /// Mostra a view de estado vazio e esconde a lista de treinos
     func showEmptyPlanState() {
         planEmptyStateView.isHidden = false
-        planContainerView.isHidden = true
+        weekSegmentedControl.isHidden = true // Esconde o seletor de semanas também
+        weeklyWorkoutListStackView.isHidden = true
     }
     
     /// Mostra a lista de treinos e esconde a view de estado vazio
     func showWorkoutPlanList() {
         planEmptyStateView.isHidden = true
-        planContainerView.isHidden = false
+        weekSegmentedControl.isHidden = false
+        weeklyWorkoutListStackView.isHidden = false
     }
 }

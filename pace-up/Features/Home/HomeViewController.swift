@@ -1,105 +1,116 @@
 import UIKit
 
 class HomeViewController: BaseViewController {
-  private var baseView = HomeView()
-  private let viewModel: HomeViewModelProtocol
-  
-  init(viewModel: HomeViewModelProtocol) {
-    self.viewModel = viewModel
-    super.init(nibName: nil, bundle: nil)
-  }
-  
-  @MainActor required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-  
-  override func loadView() {
-    view = baseView
-  }
-  
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    setupBindings()
-    setupTargets()
-    setupCollectionView()
+
+    // MARK: - Properties
     
-    viewModel.fetchData()
-  }
-  
-  private func setupCollectionView() {
-      baseView.weeklyPlanCollectionView.delegate = self
-      baseView.weeklyPlanCollectionView.dataSource = self
-      baseView.weeklyPlanCollectionView.register(WeekPlanCell.self, forCellWithReuseIdentifier: WeekPlanCell.reuseIdentifier)
-  }
-  
-  private func setupBindings() {
-    viewModel.onGreetingUpdate = { [weak self] greeting in
-      self?.baseView.setGreeting(text: greeting)
+    // Propriedade para acessar a view principal de forma segura e com o tipo correto
+    private var baseView: HomeView {
+        return self.view as! HomeView
+    }
+    
+    // Inicializa o ViewModel, passando o Router como delegado de navegação
+    private lazy var viewModel: HomeViewModelProtocol = HomeViewModel(navigationDelegate: self.router)
+
+    // Acessa o Router a partir do SceneDelegate para gerenciar a navegação
+    private var router: Router? {
+        return (self.view.window?.windowScene?.delegate as? SceneDelegate)?.router
+    }
+    
+    // MARK: - Lifecycle
+    
+    override func loadView() {
+        self.view = HomeView()
     }
 
-    viewModel.onPlanStateChange = { [weak self] state in
-      self?.updatePlanSection(state: state)
-    }
-  }
-  
-  private func setupTargets() {
-    //baseView.planSectionView.createPlanButton.addTarget(self, action: #selector(didTapCreatePlan), for: .touchUpInside)
-  }
-  
-  @objc private func didTapCreatePlan() {
-    viewModel.didTapCreatePlan()
-  }
-  
-  private func updatePlanSection(state: PlanState) {
-    switch state {
-    case .loading:
-      print("Carregando plano...")
-      // Mostrar um spinner
-    case .empty:
-      print("Nenhum plano encontrado.")
-      baseView.showEmptyPlanState()
-    case .loaded(let plan):
-                print("Plano carregado!")
-                baseView.showWorkoutPlanList()
-                // MUDANÇA: Recarrega os dados e configura o page control
-                baseView.weeklyPlanCollectionView.reloadData()
-                baseView.pageControl.numberOfPages = viewModel.activeWorkoutsByWeek.count
-    case .error(let error):
-      print("Erro ao carregar plano: \(error.localizedDescription)")
-      // Mostrar uma mensagem de erro
-    }
-  }
-}
-
-extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.activeWorkoutsByWeek.count
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.title = "Início"
+        setupBindings()
+        setupTargets()
+        
+        // Pede para o ViewModel buscar os dados iniciais
+        viewModel.fetchData()
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: WeekPlanCell.reuseIdentifier, for: indexPath) as? WeekPlanCell else {
-            return UICollectionViewCell()
+    // MARK: - Setup
+    
+    private func setupBindings() {
+        // "Ouve" as atualizações do ViewModel
+        viewModel.onGreetingUpdate = { [weak self] greeting in
+            self?.baseView.setGreeting(text: greeting)
         }
-        let weeklyWorkouts = viewModel.activeWorkoutsByWeek[indexPath.item]
-        cell.configure(with: weeklyWorkouts)
-        return cell
+
+        viewModel.onPlanStateChange = { [weak self] state in
+            // Garante que a UI seja atualizada na thread principal
+            DispatchQueue.main.async {
+                self?.updatePlanSection(for: state)
+            }
+        }
     }
     
-    // Define o tamanho de cada "página" para ocupar a tela inteira
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+    private func setupTargets() {
+        // Conecta as ações do usuário (toques) aos métodos deste ViewController
+        baseView.planEmptyStateView.createPlanButton.addTarget(self, action: #selector(didTapCreatePlan), for: .touchUpInside)
+        baseView.weekSegmentedControl.addTarget(self, action: #selector(weekSegmentDidChange(_:)), for: .valueChanged)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 0 // Remove o espaçamento entre as páginas
+    // MARK: - Actions
+    
+    @objc private func didTapCreatePlan() {
+        viewModel.didTapCreatePlan()
     }
     
-    // Atualiza o page control quando o usuário desliza a tela
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        if scrollView == baseView.weeklyPlanCollectionView {
-            let page = Int(scrollView.contentOffset.x / scrollView.frame.width)
-            baseView.pageControl.currentPage = page
+    @objc private func weekSegmentDidChange(_ sender: UISegmentedControl) {
+        viewModel.didSelectWeek(at: sender.selectedSegmentIndex)
+    }
+    
+    // MARK: - UI Updates
+    
+    private func updatePlanSection(for state: PlanState) {
+        switch state {
+        case .loading:
+            // TODO: Mostrar um spinner de carregamento
+            print("Carregando plano...")
+        case .empty:
+            print("Nenhum plano encontrado.")
+            baseView.showEmptyPlanState()
+        case .loaded(let plan):
+            print("Plano carregado!")
+            baseView.showWorkoutPlanList()
+            // Sincroniza o seletor com a semana selecionada no ViewModel
+            baseView.weekSegmentedControl.selectedSegmentIndex = viewModel.selectedWeekIndex
+            // Popula a lista de treinos com os dados filtrados
+            populateWeeklyWorkouts()
+        case .error(let error):
+            // TODO: Mostrar uma view de erro com a mensagem
+            print("Erro ao carregar plano: \(error.localizedDescription)")
+        }
+    }
+    
+    private func populateWeeklyWorkouts() {
+        // Limpa a lista antiga
+        baseView.weeklyWorkoutListStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        let workouts = viewModel.workoutsForSelectedWeek
+        
+        if workouts.isEmpty {
+          let emptyLabel = UILabel(text: "", font: .systemFont(ofSize: 16), textColor: .gray)
+            emptyLabel.text = "Nenhum treino agendado para esta semana."
+            baseView.weeklyWorkoutListStackView.addArrangedSubview(emptyLabel)
+        } else {
+            for workout in workouts {
+                let card = TodayWorkoutCardView()
+                let weekNumber = viewModel.selectedWeekIndex + 1
+                let todayWorkout = workout.toTodayWorkout(weekNumber: weekNumber)
+                
+                card.configure(with: todayWorkout) { [weak self] in
+                    print("Botão 'Começar Agora' tocado para o treino: \(todayWorkout.workoutType)")
+                    // self?.router?.navigateToLiveRun(with: todayWorkout)
+                }
+                baseView.weeklyWorkoutListStackView.addArrangedSubview(card)
+            }
         }
     }
 }

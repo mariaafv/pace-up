@@ -1,5 +1,8 @@
 import Foundation
 
+// MARK: - Protocols and Enums
+
+// O enum que define os possíveis estados da UI para a seção do plano de treino
 enum PlanState {
   case loading
   case empty
@@ -7,37 +10,59 @@ enum PlanState {
   case error(Error)
 }
 
+// O protocolo que o Router deve implementar para a navegação
 protocol HomeViewModelNavigationDelegate: AnyObject {
   func navigateToOnboarding()
 }
 
+// A "face pública" do ViewModel que o ViewController vai usar
 protocol HomeViewModelProtocol: AnyObject {
   var onPlanStateChange: ((PlanState) -> Void)? { get set }
   var onGreetingUpdate: ((String) -> Void)? { get set }
-  var activeWorkoutsByWeek: [[WorkoutDay]]  { get set }
+  var activeWorkoutsByWeek: [[WorkoutDay]] { get }
+  var selectedWeekIndex: Int { get }
+  var workoutsForSelectedWeek: [WorkoutDay] { get }
   
   func fetchData()
   func didTapCreatePlan()
+  func didSelectWeek(at index: Int)
 }
 
+// MARK: - ViewModel Implementation
+
 class HomeViewModel: HomeViewModelProtocol {
+  
+  // MARK: - Properties
+  
   var onPlanStateChange: ((PlanState) -> Void)?
   var onGreetingUpdate: ((String) -> Void)?
-  var activeWorkoutsByWeek: [[WorkoutDay]] = []
+  
+  private(set) var activeWorkoutsByWeek: [[WorkoutDay]] = []
+  private(set) var selectedWeekIndex = 0
+
+  // Propriedade computada que facilita o acesso aos treinos da semana selecionada
+  var workoutsForSelectedWeek: [WorkoutDay] {
+      guard selectedWeekIndex < activeWorkoutsByWeek.count else { return [] }
+      return activeWorkoutsByWeek[selectedWeekIndex]
+  }
   
   private weak var navigationDelegate: HomeViewModelNavigationDelegate?
   private var plan: WorkoutPlan?
   
+  // MARK: - Initializer
+  
   init(navigationDelegate: HomeViewModelNavigationDelegate?) {
     self.navigationDelegate = navigationDelegate
   }
+  
+  // MARK: - Public Methods
   
   func fetchData() {
       onGreetingUpdate?("Olá, Maria! 👋")
       onPlanStateChange?(.loading)
       
       guard let userID = SessionManager.shared.userID else {
-          onPlanStateChange?(.error(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Usuário não encontrado"])))
+          onPlanStateChange?(.error(NSError(domain: "AuthError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Usuário não encontrado"])))
           return
       }
       
@@ -45,29 +70,24 @@ class HomeViewModel: HomeViewModelProtocol {
           do {
               let profiles: [ProfileInfo] = try await SupabaseManager.shared.client
                   .from("profiles")
-                  .select("workout_plan, planGenerationError") // Pede apenas as colunas que precisamos
+                  .select("workout_plan, planGenerationError")
                   .eq("id", value: userID)
                   .execute()
                   .value
 
-              // MUDANÇA: Movemos toda a lógica para dentro do MainActor.run,
-              // que é executado após a busca no Supabase ser concluída.
               await MainActor.run {
                   guard let userProfile = profiles.first else {
-                      // Se não encontrou o perfil, o usuário é novo e não tem plano.
                       onPlanStateChange?(.empty)
                       return
                   }
                   
-                  // Agora, 'userProfile' está no escopo correto e podemos usá-la.
                   if let plan = userProfile.workout_plan {
                       self.plan = plan
-                      self.processPlan() // Processa o plano para filtrar os treinos
+                      self.processPlan()
                       onPlanStateChange?(.loaded(plan: plan))
                   } else if let errorMessage = userProfile.planGenerationError {
-                      onPlanStateChange?(.error(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: errorMessage])))
+                      onPlanStateChange?(.error(NSError(domain: "PlanGenerationError", code: 0, userInfo: [NSLocalizedDescriptionKey: errorMessage])))
                   } else {
-                      // O perfil existe, mas ainda não tem um plano.
                       onPlanStateChange?(.empty)
                   }
               }
@@ -79,6 +99,20 @@ class HomeViewModel: HomeViewModelProtocol {
       }
   }
   
+  func didSelectWeek(at index: Int) {
+      selectedWeekIndex = index
+      // Notifica o ViewController que o estado mudou para que a lista de treinos seja redesenhada
+      if let plan = self.plan {
+          onPlanStateChange?(.loaded(plan: plan))
+      }
+  }
+
+  func didTapCreatePlan() {
+    navigationDelegate?.navigateToOnboarding()
+  }
+  
+  // MARK: - Private Methods
+  
   private func processPlan() {
       guard let plan = self.plan else {
           activeWorkoutsByWeek = []
@@ -86,18 +120,13 @@ class HomeViewModel: HomeViewModelProtocol {
       }
       
       let allWeeks = [plan.week1, plan.week2, plan.week3, plan.week4]
-          .compactMap { $0 } // Remove semanas que possam ser nulas
+          .compactMap { $0 }
           
-      // Filtra cada semana para remover os dias de "Descanso"
       activeWorkoutsByWeek = allWeeks.map { week in
           return week.filter { workoutDay in
               guard let type = workoutDay.type else { return false }
               return !type.lowercased().contains("descanso")
           }
       }
-  }
-
-  func didTapCreatePlan() {
-    navigationDelegate?.navigateToOnboarding()
   }
 }
