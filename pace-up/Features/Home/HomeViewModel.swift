@@ -58,7 +58,13 @@ class HomeViewModel: HomeViewModelProtocol {
   // MARK: - Public Methods
   
   func fetchData() {
-      onGreetingUpdate?("Olá, Maria! 👋")
+    
+    if let userName = SessionManager.shared.userName, !userName.isEmpty {
+      let firstName = userName.components(separatedBy: " ").first ?? userName
+      onGreetingUpdate?("Olá, \(firstName)! 👋")
+    } else {
+      onGreetingUpdate?("Olá! 👋")
+    }
       onPlanStateChange?(.loading)
       
       guard let userID = SessionManager.shared.userID else {
@@ -116,11 +122,14 @@ class HomeViewModel: HomeViewModelProtocol {
   private func processPlan() {
       guard let plan = self.plan else {
           activeWorkoutsByWeek = []
+          print("❌ DEBUG: 'processPlan' falhou porque o plano principal é nulo.")
           return
       }
       
       let allWeeks = [plan.week1, plan.week2, plan.week3, plan.week4]
           .compactMap { $0 }
+          
+      print("✅ DEBUG: Encontradas \(allWeeks.count) semanas no plano.")
           
       activeWorkoutsByWeek = allWeeks.map { week in
           return week.filter { workoutDay in
@@ -128,5 +137,7 @@ class HomeViewModel: HomeViewModelProtocol {
               return !type.lowercased().contains("descanso")
           }
       }
-  }
-}
+      
+      // Adicione este print para ver o resultado do filtro
+      print("✅ DEBUG: Treinos ativos por semana após o filtro: \(activeWorkoutsByWeek.map { $0.count })")
+  }}

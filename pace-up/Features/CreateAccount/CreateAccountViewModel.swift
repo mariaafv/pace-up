@@ -28,6 +28,16 @@ extension CreateAccountViewModel: CreateAccountViewModelProtocol {
         print("Erro ao criar o usuário: \(error.localizedDescription)")
       }
       
+      let changeRequest = result?.user.createProfileChangeRequest()
+      changeRequest?.displayName = result?.user.displayName
+      changeRequest?.commitChanges { error in
+        if let error = error {
+            print("Erro ao salvar o nome do usuário: \(error.localizedDescription)")
+        } else {
+          print("✅ Nome de usuário '\(result?.user.displayName)' salvo com sucesso!")
+        }
+    }
+      
       print("Usuário registrado e logado: \(result?.user.uid)")
       SessionManager.shared.userID = result?.user.uid
       navigationDelegate?.didTapCreateAccount()

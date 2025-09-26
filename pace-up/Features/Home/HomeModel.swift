@@ -2,12 +2,12 @@ import Foundation
 
 struct TodayWorkout {
   let day: String?
-    let weekNumber: Int
-    let workoutType: String
-    let description: String
-    let durationMinutes: Int
-    let targetDistance: Double?
-    let completed: Bool
+  let weekNumber: Int
+  let workoutType: String
+  let description: String
+  let durationMinutes: Int
+  let targetDistance: Double?
+  let completed: Bool
 }
 
 struct WorkoutPlan: Codable {
@@ -29,8 +29,8 @@ struct WorkoutDay: Codable {
       workoutType: self.type ?? "descanso",
       description: self.description ?? "Recuperação é parte do treino!",
       durationMinutes: self.duration_minutes ?? 0,
-      targetDistance: nil, // A IA ainda não nos dá essa informação
-      completed: false // A lógica de conclusão virá depois
+      targetDistance: nil,
+      completed: false
     )
   }
 }

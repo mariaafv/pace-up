@@ -4,6 +4,7 @@ final class SessionManager {
   static let shared = SessionManager()
   
   var userID: String?
+  var userName: String?
   
   private init() {}
   
@@ -13,5 +14,6 @@ final class SessionManager {
   
   func logout() {
     userID = nil
+    userName = nil
   }
 }

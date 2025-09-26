@@ -21,7 +21,7 @@ final class Router {
     let tabBarController = UITabBarController()
     
     let viewModel = HomeViewModel(navigationDelegate: self)
-    let planVC = HomeViewController()
+    let planVC = HomeViewController(viewModel: viewModel)
     let planNavController = UINavigationController(rootViewController: planVC)
     planNavController.tabBarItem = UITabBarItem(title: "Inicio", image: UIImage(systemName: "house.fill"), tag: 0)
     
@@ -128,6 +128,7 @@ extension Router {
       if let user = user {
         print("Usuário logado: \(user.uid)")
         SessionManager.shared.userID = user.uid
+        SessionManager.shared.userName = user.displayName
         self.callLoginSuccessfully()
       } else {
         let viewModel = WelcomeViewModel(navigationDelegate: self)
