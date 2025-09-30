@@ -37,8 +37,9 @@ final class Router {
     let statsNavController = UINavigationController(rootViewController: statsVC)
     statsNavController.tabBarItem = UITabBarItem(title: "Histórico", image: UIImage(systemName: "trophy.fill"), tag: 1)
     
-    let profileVC = UIViewController()
-    profileVC.view.backgroundColor = .systemBackground
+    let profileViewModel = ProfileViewModel()
+    let profileVC = ProfileViewController(viewModel: profileViewModel)
+    profileVC.view.backgroundColor = .systemGroupedBackground
     profileVC.title = "Perfil"
     let profileNavController = UINavigationController(rootViewController: profileVC)
     profileNavController.tabBarItem = UITabBarItem(title: "Perfil", image: UIImage(systemName: "person.fill"), tag: 2)

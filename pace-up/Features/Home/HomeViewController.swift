@@ -56,19 +56,19 @@ class HomeViewController: BaseViewController {
   private func updatePlanSection(for state: PlanState) {
     switch state {
     case .loading:
-      // TODO: Mostrar um spinner de carregamento
       print("Carregando plano...")
+      // TODO: Mostrar um spinner
     case .empty:
-      print("Nenhum plano encontrado.")
+      print("Nenhum plano encontrado. Mostrando estado vazio.")
       baseView.showEmptyPlanState()
     case .loaded(_):
-      print("Plano carregado!")
+      print("Plano carregado! Populando a UI...")
       baseView.showWorkoutPlanList()
       baseView.weekSegmentedControl.selectedSegmentIndex = viewModel?.selectedWeekIndex ?? 0
       populateWeeklyWorkouts()
     case .error(let error):
-      // TODO: Mostrar uma view de erro com a mensagem
       print("Erro ao carregar plano: \(error.localizedDescription)")
+      // TODO: Mostrar uma view de erro
     }
   }
   
@@ -78,7 +78,6 @@ class HomeViewController: BaseViewController {
       view.removeFromSuperview()
     }
     
-    let workoutCount = viewModel?.workoutsForSelectedWeek.count ?? 0
     guard let workouts = viewModel?.workoutsForSelectedWeek, !workouts.isEmpty else {
       let emptyLabel = UILabel()
       emptyLabel.text = "Nenhum treino agendado para esta semana."
@@ -90,7 +89,7 @@ class HomeViewController: BaseViewController {
       return
     }
     
-    for (index, workout) in workouts.enumerated() {
+    for (_, workout) in workouts.enumerated() {
       let card = TodayWorkoutCardView()
       let weekNumber = (viewModel?.selectedWeekIndex ?? 0) + 1
       let todayWorkout = workout.toTodayWorkout(weekNumber: weekNumber)

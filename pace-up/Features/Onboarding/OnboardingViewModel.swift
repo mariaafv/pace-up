@@ -61,12 +61,12 @@ final class OnboardingViewModel: OnboardingViewModelProtocol {
       return
     }
     
-    let profile = ProfileData(
+    let profile = ProfileUpdateDTO(
       weight: Float(self.weight ?? "0") ?? 0,
       height: Int(self.height ?? "0") ?? 0,
       experience: self.experience ?? "Não informado",
       goal: self.goal ?? "Não informado",
-      run_days: Array(self.selectedDays)
+      run_days: Array(self.selectedDays),
     )
     
     do {

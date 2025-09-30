@@ -1,11 +1,11 @@
 import Foundation
 
 protocol OnboardingWorkerProtocol: AnyObject {
-  func saveProfileAndGeneratePlan(token: String, userId: String, profileData: ProfileData) async throws
+  func saveProfileAndGeneratePlan(token: String, userId: String, profileData: ProfileUpdateDTO) async throws
 }
 
 class OnboardingWorker: OnboardingWorkerProtocol {
-  func saveProfileAndGeneratePlan(token: String, userId: String, profileData: ProfileData) async throws {
+  func saveProfileAndGeneratePlan(token: String, userId: String, profileData: ProfileUpdateDTO) async throws {
     guard let url = URL(string: "https://pace-up-backend.vercel.app/api/generatePlan") else {
       throw URLError(.badURL)
     }
