@@ -13,17 +13,14 @@ final class SessionManager {
   }
   
   func logout() {
-    // Limpar todos os dados do usuário dos UserDefaults
     UserDefaults.standard.removeObject(forKey: "user_id")
     UserDefaults.standard.removeObject(forKey: "user_name")
     UserDefaults.standard.removeObject(forKey: "user_email")
     UserDefaults.standard.removeObject(forKey: "auth_token")
     
-    // Resetar propriedades da instância
     userID = nil
     userName = nil
     
-    // Fazer logout no Supabase se necessário
     Task {
       try? await SupabaseManager.shared.client.auth.signOut()
     }
@@ -52,9 +49,7 @@ extension SessionManager {
     func updateUserEmail(_ email: String) {
         UserDefaults.standard.set(email, forKey: "user_email")
     }
-    
-    // Removido o método logout() duplicado
-    
+        
     func isUserLoggedIn() -> Bool {
         return userID != nil && !userID!.isEmpty
     }

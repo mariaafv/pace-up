@@ -54,7 +54,7 @@ class WelcomeView: UIView {
   
   private let subtitleLabel: UILabel = {
     let label = UILabel()
-    label.text = "AI-powered custom running plans, tailored to your goals and fitness level."
+    label.text = "Planos de corrida personalizados por IA, feitos sob medida para seus objetivos e condicionamento."
     label.font = .systemFont(ofSize: 16, weight: .regular)
     label.textColor = .text
     label.textAlignment = .center

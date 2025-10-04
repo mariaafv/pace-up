@@ -25,7 +25,8 @@ final class Router {
     let planNavController = UINavigationController(rootViewController: planVC)
     planNavController.tabBarItem = UITabBarItem(title: "Inicio", image: UIImage(systemName: "house.fill"), tag: 0)
     
-    let runVC = UIViewController()
+    let runViewModel = RunViewModel(navigationDelegate: self)
+    let runVC = RunViewController(viewModel: runViewModel)
     runVC.view.backgroundColor = .systemBackground
     runVC.title = "Correr"
     let runNavController = UINavigationController(rootViewController: runVC)
@@ -116,6 +117,12 @@ extension Router: OnboardingNavigationDelegate {
   func didCompleteOnboarding() {
     UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
     showMainApp()
+  }
+}
+
+extension Router: RunNavigationDelegate {
+  func navigateToRunSummary(run: Run) {
+    //code
   }
 }
 
