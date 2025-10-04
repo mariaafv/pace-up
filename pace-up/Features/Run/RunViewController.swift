@@ -72,8 +72,8 @@ class RunViewController: BaseViewController {
   
   @objc private func secondaryActionTapped() {
     if viewModel?.currentRunState == .running || viewModel?.currentRunState == .paused {
-      if let run = viewModel?.finishRun() {
-        //router?.navigateToRunSummary(run: run)
+      Task {
+        await viewModel?.finishRun()
       }
     }
   }

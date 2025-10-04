@@ -12,7 +12,7 @@ protocol RunViewModelProtocol: AnyObject {
   func startRun()
   func pauseRun()
   func resumeRun()
-  func finishRun() -> Run?
+  func finishRun() async
 }
 
 protocol RunNavigationDelegate: AnyObject {
@@ -26,6 +26,7 @@ class RunViewModel: RunViewModelProtocol {
   
   private weak var navigationDelegate: RunNavigationDelegate?
   private let runTracker: RunTrackingManager
+  private let worker: RunWorkerProtocol
   var currentRunState: RunState = .ready {
     didSet {
       onRunStateChange?(currentRunState)
@@ -34,9 +35,13 @@ class RunViewModel: RunViewModelProtocol {
   private var runStartTime: Date?
   private var latestMetrics: RunMetrics = RunMetrics(time: 0, distance: 0, pace: 0)
   
-  init(navigationDelegate: RunNavigationDelegate?, runTracker: RunTrackingManager = RunTrackingManager()) {
+  init(navigationDelegate: RunNavigationDelegate?,
+       runTracker: RunTrackingManager = RunTrackingManager(),
+       worker: RunWorkerProtocol = RunWorker()) {
     self.navigationDelegate = navigationDelegate
     self.runTracker = runTracker
+    self.worker = worker
+    
     self.runTracker.delegate = self
   }
     
@@ -69,23 +74,30 @@ class RunViewModel: RunViewModelProtocol {
     currentRunState = .running
   }
   
-  func finishRun() -> Run? {
-    guard currentRunState == .running || currentRunState == .paused else { return nil }
+  func finishRun() async {
+    guard currentRunState == .running || currentRunState == .paused else { return }
     
     let (duration, distance, _) = runTracker.stop()
     currentRunState = .finished
     
-    guard let userID = SessionManager.shared.userID, let startTime = runStartTime else { return nil }
+    guard let userID = SessionManager.shared.userID, let startTime = runStartTime else { return }
     
     let newRun = Run(id: nil,
-                     userId: userID,
+                     user_id: userID,
                      name: "Corrida \(Date())",
-                     durationSeconds: Int(duration),
-                     distanceMeters: distance,
-                     startTime: startTime,
-                     createdAt: nil)
+                     duration_seconds: Int(duration),
+                     distance_meters: distance,
+                     start_time: startTime,
+                     created_at: nil)
     
-    return newRun
+    do {
+      try await worker.save(run: newRun)
+      await MainActor.run {
+        // navigate to run summary
+      }
+    } catch {
+      print("❌ ViewModel: Falha ao salvar a corrida. Erro: \(error.localizedDescription)")
+    }
   }
 }
 

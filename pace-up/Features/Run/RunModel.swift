@@ -3,17 +3,17 @@ import CoreLocation
 
 struct Run: Codable {
   let id: Int?
-  let userId: String
+  let user_id: String
   let name: String
-  let durationSeconds: Int
-  let distanceMeters: Double
-  let startTime: Date
-  let createdAt: Date?
+  let duration_seconds: Int
+  let distance_meters: Double
+  let start_time: Date
+  let created_at: Date?
   
   var formattedDuration: String {
-    let hours = durationSeconds / 3600
-    let minutes = (durationSeconds % 3600) / 60
-    let seconds = (durationSeconds % 3600) % 60
+    let hours = duration_seconds / 3600
+    let minutes = (duration_seconds % 3600) / 60
+    let seconds = (duration_seconds % 3600) % 60
     if hours > 0 {
       return String(format: "%d:%02d:%02d", hours, minutes, seconds)
     } else {
@@ -22,13 +22,13 @@ struct Run: Codable {
   }
   
   var formattedDistanceKm: String {
-    return String(format: "%.2f km", distanceMeters / 1000)
+    return String(format: "%.2f km", distance_meters / 1000)
   }
   
   var formattedPaceMinPerKm: String {
-    guard distanceMeters > 0 else { return "0'00\"" }
-    let totalMinutes = Double(durationSeconds) / 60.0
-    let totalKm = distanceMeters / 1000.0
+    guard distance_meters > 0 else { return "0'00\"" }
+    let totalMinutes = Double(duration_seconds) / 60.0
+    let totalKm = distance_meters / 1000.0
     let pace = totalMinutes / totalKm
     
     let paceMinutes = Int(pace)
